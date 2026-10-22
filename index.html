@@ -54,7 +54,7 @@
         
         .countdown {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-top: 40px;
         }
@@ -63,8 +63,7 @@
             background: rgba(26, 26, 26, 0.9);
             border: 2px solid #ff6b00;
             border-radius: 10px;
-            padding: 20px;
-            min-width: 120px;
+            padding: 20px 10px;
             box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -115,6 +114,30 @@
             pointer-events: none;
             background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
         }
+        /* Keep the four boxes on one line on small screens */
+@media (max-width: 520px) {
+    .container {
+        padding: 20px 12px;
+    }
+
+    .countdown {
+        gap: 6px;
+    }
+
+    .time-box {
+        padding: 10px 2px;
+        border-width: 1px;
+    }
+
+    .time-value {
+        font-size: 1.35rem;
+    }
+
+    .time-label {
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+    }
+}
     </style>
 </head>
 <body>
