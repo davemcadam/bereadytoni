@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be Ready.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            color: #ff6b00;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 800px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #ff6b00, 0 0 40px #cc5500;
+            animation: flicker 3s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.7; }
+            94% { opacity: 1; }
+            95% { opacity: 0.6; }
+            96% { opacity: 1; }
+        }
+        
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            margin-bottom: 50px;
+            color: #cc8800;
+            letter-spacing: 3px;
+        }
+        
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .time-box {
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 120px;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .time-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.6);
+        }
+        
+        .time-value {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            display: block;
+        }
+        
+        .time-label {
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
+            color: #cc8800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 8px;
+            display: block;
+        }
+        
+        .message {
+            margin-top: 50px;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #997700;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #555;
+        }
+        
+        /* Subtle fog effect */
+        .fog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="fog"></div>
+    
+    <div class="container">
+        <h1>Hi Toni.</h1>
+        <p class="tagline">Be Ready.</p>
+        
+        <div class="countdown" id="countdown">
+            <div class="time-box">
+                <span class="time-value" id="days">00</span>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-box">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-box">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-box">
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">Seconds</span>
+            </div>
+        </div>
+     
+    </div>
+    
+    <script>
+        function updateCountdown() {
+            const now = new Date();
+            const year = now.getFullYear();
+            
+            // Set Halloween date for current year (October 31)
+            let halloween = new Date(`October 31, ${year} 21:00:00`);
+            
+            // If Halloween already passed this year, count to next year
+            if (now > halloween) {
+                halloween = new Date(`October 31, ${year + 1} 00:00:00`);
+            }
+            
+            const diff = halloween - now;
+            
+            // Calculate time units
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Update the DOM with leading zeros
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+        }
+        
+        // Run once immediately, then every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
