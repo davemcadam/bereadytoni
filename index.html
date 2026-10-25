@@ -213,6 +213,18 @@
 .play-overlay.hidden {
     display: none;
 }
+/* Hide the actual video until play is clicked */
+.video-wrap video {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-wrap video.show-video {
+    opacity: 1;
+}
     </style>
 </head>
 <body>
@@ -251,7 +263,7 @@
                 <source src="be-ready-toni.mp4" type="video/mp4">
                 Your browser can't play this video.
             </video>
-            <button id="playButton" class="play-overlay">&#9654; Play if you dare</button>
+            <button id="playButton" class="play-overlay">&#9654; are you ready?</button>
         </div>
     </div>
 
@@ -263,7 +275,7 @@
     // ====== SET YOUR REVEAL MOMENT HERE ======
     // Format: new Date(YEAR, MONTH, DAY, HOUR, MINUTE)
     // IMPORTANT: the month is zero-indexed, so 9 = October
-    const REVEAL_DATE = new Date(2026, 9, 31, 21, 0, 0);
+    const REVEAL_DATE = new Date(2026, 9, 25, 22, 30, 0);
 
     let timerId = null;
     let revealed = false;
@@ -313,23 +325,31 @@
     }
 
     // Play button handling
-    const playBtn = document.getElementById('playButton');
-    const video   = document.getElementById('prankVideo');
+const playBtn = document.getElementById('playButton');
+const video   = document.getElementById('prankVideo');
+const videoWrap = document.querySelector('.video-wrap');
 
-    if (playBtn && video && typeof video.play === 'function') {
-        playBtn.addEventListener('click', function () {
-            playBtn.classList.add('hidden');
-            video.play();
-        });
+if (playBtn && video && typeof video.play === 'function') {
+    playBtn.addEventListener('click', function () {
+        playBtn.classList.add('hidden');
+        video.classList.add('show-video');
+        video.play();
+    });
 
-        video.addEventListener('pause', function () {
-            if (!video.ended) playBtn.classList.remove('hidden');
-        });
-
-        video.addEventListener('ended', function () {
+    video.addEventListener('pause', function () {
+        if (!video.ended) {
             playBtn.classList.remove('hidden');
-        });
-    }
+            video.classList.remove('show-video');
+        }
+    });
+
+    video.addEventListener('ended', function () {
+        playBtn.classList.remove('hidden');
+        video.classList.remove('show-video');
+    });
+}
+
+
 
     // Kick it off
     updateCountdown();
