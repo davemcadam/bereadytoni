@@ -327,26 +327,25 @@
     // Play button handling
 const playBtn = document.getElementById('playButton');
 const video   = document.getElementById('prankVideo');
-const videoWrap = document.querySelector('.video-wrap');
 
-if (playBtn && video && typeof video.play === 'function') {
+function showVideo() {
+    video.classList.add('show-video');
+    playBtn.classList.add('hidden');
+}
+
+if (playBtn && video) {
+    // Our button starts the video
     playBtn.addEventListener('click', function () {
-        playBtn.classList.add('hidden');
-        video.classList.add('show-video');
+        showVideo();
         video.play();
     });
 
-    video.addEventListener('pause', function () {
-        if (!video.ended) {
-            playBtn.classList.remove('hidden');
-            video.classList.remove('show-video');
-        }
-    });
+    // ANY playback start reveals the video — button, native
+    // controls, keyboard, fullscreen resume, all of it
+    video.addEventListener('play', showVideo);
 
-    video.addEventListener('ended', function () {
-        playBtn.classList.remove('hidden');
-        video.classList.remove('show-video');
-    });
+    // Pausing no longer blacks the screen out — the frozen
+    // frame just stays, like a normal video player
 }
 
 
