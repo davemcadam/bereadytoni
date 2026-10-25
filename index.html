@@ -138,67 +138,202 @@
         letter-spacing: 1px;
     }
 }
+/* --- reveal section, hidden until the countdown ends --- */
+#stage {
+    transition: opacity 0.9s ease;
+}
+
+#stage.fade-out {
+    opacity: 0;
+}
+
+.reveal {
+    display: none;
+    margin-top: 30px;
+}
+
+.reveal.show {
+    display: block;
+    animation: riseIn 1.2s ease forwards;
+}
+
+@keyframes riseIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal-heading {
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    color: #ff6b00;
+    text-shadow: 0 0 20px #ff6b00;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+.video-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    border: 2px solid #ff6b00;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 0 30px rgba(255, 107, 0, 0.45);
+}
+
+.video-wrap video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: none;
+    background: rgba(0, 0, 0, 0.68);
+    color: #ff6b00;
+    font-family: inherit;
+    font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.play-overlay:hover {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.play-overlay.hidden {
+    display: none;
+}
     </style>
 </head>
 <body>
     <div class="fog"></div>
     
     <div class="container">
-        <h1>Just one week left Toni.</h1>
+
+    <div id="stage">
+        <h1>Only six more days Toni.</h1>
         <p class="tagline">Be Ready.</p>
-        
-        <div class="countdown" id="countdown">
-            <div class="time-box">
-                <span class="time-value" id="days">00</span>
-                <span class="time-label">Days</span>
-            </div>
-            <div class="time-box">
-                <span class="time-value" id="hours">00</span>
-                <span class="time-label">Hours</span>
-            </div>
-            <div class="time-box">
-                <span class="time-value" id="minutes">00</span>
-                <span class="time-label">Minutes</span>
-            </div>
-            <div class="time-box">
-                <span class="time-value" id="seconds">00</span>
-                <span class="time-label">Seconds</span>
-            </div>
-        </div>
-     
+
+            <div class="countdown" id="countdown">
+    <div class="time-box">
+        <span class="time-value" id="days">00</span>
+        <span class="time-label">Days</span>
     </div>
+    <div class="time-box">
+        <span class="time-value" id="hours">00</span>
+        <span class="time-label">Hours</span>
+    </div>
+    <div class="time-box">
+        <span class="time-value" id="minutes">00</span>
+        <span class="time-label">Minutes</span>
+    </div>
+    <div class="time-box">
+        <span class="time-value" id="seconds">00</span>
+        <span class="time-label">Seconds</span>
+    </div>
+</div>
+        </div>
+
+    <div id="reveal" class="reveal">
+        <h2 class="reveal-heading">Time's up.</h2>
+        <div class="video-wrap">
+            <video id="prankVideo" playsinline controls preload="metadata">
+                <source src="be-ready-toni.mp4" type="video/mp4">
+                Your browser can't play this video.
+            </video>
+            <button id="playButton" class="play-overlay">&#9654; Play if you dare</button>
+        </div>
+    </div>
+
+    </div>
+
+</div>
     
-    <script>
-        function updateCountdown() {
-            const now = new Date();
-            const year = now.getFullYear();
-            
-            // Set Halloween date for current year (October 31)
-            let halloween = new Date(`October 31, ${year} 21:00:00`);
-            
-            // If Halloween already passed this year, count to next year
-            if (now > halloween) {
-                halloween = new Date(`October 31, ${year + 1} 00:00:00`);
-            }
-            
-            const diff = halloween - now;
-            
-            // Calculate time units
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            // Update the DOM with leading zeros
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+   <script>
+    // ====== SET YOUR REVEAL MOMENT HERE ======
+    // Format: new Date(YEAR, MONTH, DAY, HOUR, MINUTE)
+    // IMPORTANT: the month is zero-indexed, so 9 = October
+    const REVEAL_DATE = new Date(2026, 9, 25, 22, 10, 0);
+
+    let timerId = null;
+    let revealed = false;
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function updateCountdown() {
+        const now = new Date();
+        const diff = REVEAL_DATE - now;
+
+        // Time's up — swap the countdown for the video
+        if (diff <= 0) {
+            revealVideo();
+            return;
         }
-        
-        // Run once immediately, then every second
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    </script>
+
+        const days    = Math.floor(diff / 86400000);
+        const hours   = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        document.getElementById('days').textContent    = pad(days);
+        document.getElementById('hours').textContent   = pad(hours);
+        document.getElementById('minutes').textContent = pad(minutes);
+        document.getElementById('seconds').textContent = pad(seconds);
+    }
+
+    function revealVideo() {
+        if (revealed) return;
+        revealed = true;
+
+        if (timerId) clearInterval(timerId);
+
+        const stage  = document.getElementById('stage');
+        const reveal = document.getElementById('reveal');
+
+        // Fade the countdown out, then bring the video in
+        stage.classList.add('fade-out');
+
+        setTimeout(function () {
+            stage.style.display = 'none';
+            reveal.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 900);
+    }
+
+    // Play button handling
+    const playBtn = document.getElementById('playButton');
+    const video   = document.getElementById('prankVideo');
+
+    if (playBtn && video && typeof video.play === 'function') {
+        playBtn.addEventListener('click', function () {
+            playBtn.classList.add('hidden');
+            video.play();
+        });
+
+        video.addEventListener('pause', function () {
+            if (!video.ended) playBtn.classList.remove('hidden');
+        });
+
+        video.addEventListener('ended', function () {
+            playBtn.classList.remove('hidden');
+        });
+    }
+
+    // Kick it off
+    updateCountdown();
+    timerId = setInterval(updateCountdown, 1000);
+</script>
 </body>
 </html>
