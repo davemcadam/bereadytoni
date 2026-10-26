@@ -114,6 +114,25 @@
             pointer-events: none;
             background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
         }
+        /* Spooky ghost overlay */
+.ghost-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+        background-size: cover;          /* This scales it to fill the viewport */
+    background-position: center;     /* Centers it */
+    background-repeat: no-repeat;    /* Prevents tiling */
+}
+
+.ghost-bg.visible {
+    opacity: 0.1; /* Adjust this value to make it more/less visible */
+}
         /* Keep the four boxes on one line on small screens */
 @media (max-width: 520px) {
     .container {
@@ -228,12 +247,13 @@
     </style>
 </head>
 <body>
+    <div class="ghost-bg" id="ghostBg"></div>   
     <div class="fog"></div>
-    
     <div class="container">
 
     <div id="stage">
         <h1>Five days left Toni.</h1>
+        
         <p class="tagline">Be Ready.</p>
 
             <div class="countdown" id="countdown">
@@ -353,6 +373,51 @@ if (playBtn && video) {
     // Kick it off
     updateCountdown();
     timerId = setInterval(updateCountdown, 1000);
+// Sporadic ghost image effect
+const ghostBg = document.getElementById('ghostBg');
+
+// Path to your spooky image file
+const GHOST_IMAGE_PATH = 'ghost-overlay.png';
+
+let ghostIntervalId = null;
+
+// Load and set the background image
+const ghostImg = new Image();
+ghostImg.src = GHOST_IMAGE_PATH;
+ghostImg.onload = function () {
+    ghostBg.style.backgroundImage = `url('${GHOST_IMAGE_PATH}')`;
+};
+
+function toggleGhost() {
+    ghostBg.classList.toggle('visible');
+}
+
+function startGhostEffect() {
+    // Clear any existing interval
+    if (ghostIntervalId) clearInterval(ghostIntervalId);
+
+    // Show ghost for 2-6 seconds, then hide for 4-10 seconds
+    scheduleGhostAppear();
+}
+
+function scheduleGhostAppear() {
+    // Random delay before showing (4-10 seconds)
+    const appearDelay = Math.floor(Math.random() * 4000) + 2000;
+
+    setTimeout(function () {
+        toggleGhost();
+        // After showing, schedule disappearance
+        const disappearDelay = Math.floor(Math.random() * 500);
+        setTimeout(function () {
+            toggleGhost();
+            scheduleGhostAppear(); // Loop indefinitely
+        }, disappearDelay);
+    }, appearDelay);
+}
+
+// Start the ghost effect after the page loads
+startGhostEffect();
+
 </script>
 </body>
 </html>
